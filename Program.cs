@@ -7,6 +7,8 @@ namespace Snake
         static void Main(string[] args)
         {
             Console.WriteLine("Welcome to Snek!");
+            Console.WriteLine("*******************************************");
+            Console.WriteLine("The best game!");
         }
     }
 }
