@@ -11,12 +11,9 @@ namespace Snake
             bool playAgain = false;
             do
             {
-
                 // welcome screen
-                Console.WriteLine("Welcome to Snek!");
-                Console.WriteLine("****************");
-                Console.WriteLine(" The best game!");
-                Console.ReadKey();
+                WelcomeScreen();
+
                 // ask for player name
 
                 // run game loop
@@ -24,8 +21,16 @@ namespace Snake
                 // print score
 
                 // ask play again
-                
+
             } while (playAgain);
+        }
+
+        private static void WelcomeScreen()
+        {
+            Console.WriteLine("Welcome to Snek!");
+            Console.WriteLine("****************");
+            Console.WriteLine(" The best game! ");
+            Console.ReadKey();
         }
     }
 }
