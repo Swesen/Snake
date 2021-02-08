@@ -88,10 +88,10 @@ namespace Snake
                 } while (timer.ElapsedMilliseconds < gameLoopMS);
 
                 // debug input
-                if (userInput != ConsoleKey.Escape)
-                {
-                    Console.Write(userInput.ToString());
-                }
+                //if (userInput != ConsoleKey.Escape)
+                //{
+                //    Console.Write(userInput.ToString());
+                //}
 
                 timer.Stop();
             } while (true);
