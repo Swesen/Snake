@@ -177,10 +177,15 @@ namespace Snake
         static void LossScreen()
         {
             Console.Clear();
+            WriteLineCentered("********************");
             WriteLineCentered("YOU LOSE");
             string a = "your score was: " + snakeLength;
             WriteLineCentered(a);
-            WriteLineCentered("****************");
+            WriteLineCentered("You SUCK");
+            WriteLineCentered("My MoM CoUlD Do BeTtEr ThEn YoU");
+            WriteLineCentered("Why aRe YoU UgLy?");
+            WriteLineCentered("[Insert every horrible inslult here]");
+            WriteLineCentered("********************");
         }
     }
 }
