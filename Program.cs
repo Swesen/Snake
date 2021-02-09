@@ -5,21 +5,37 @@ namespace Snake
 {
     class Program
     {
+
         // global variables
         static int gameSpeed = 500;
+        static int gameFieldSize = 40;
+        static int[,] virtualGameGrid = new int[gameFieldSize, gameFieldSize];
+
+        //   , ░░, ▒▒, ▓▓, ██
+        static string[] square = { "  ", "░░", "▒▒", "▓▓", "██" };
+
         static int snakeLength = 0;
+
 
         static void Main(string[] args)
         {
+            // set window size
+            Console.SetBufferSize(100, 50);
+            Console.SetWindowSize(100, 50);
             bool playAgain = false;
             do
             {
+
                 // welcome screen
                 WelcomeScreen();
 
                 // ask for player name
 
+
                 // run game loop
+
+                DebugDrawVirtualGrid();
+
                 PlaySnake(gameSpeed);
 
                 // print score
@@ -29,13 +45,44 @@ namespace Snake
             } while (playAgain);
         }
 
+        private static void DebugDrawVirtualGrid()
+        {
+            // debug draw virtual game field
+            for (int i = 0; i < gameFieldSize + 2; i++)
+            {
+                Console.Write($"{square[4]}");
+            }
+            Console.WriteLine();
+            for (int x = 0; x < gameFieldSize; x++)
+            {
+                Console.Write($"{square[4]}");
+                for (int y = 0; y < gameFieldSize; y++)
+                {
+                    Console.Write($"{square[virtualGameGrid[x, y]]}");
+                }
+                Console.WriteLine($"{square[4]}");
+            }
+            for (int i = 0; i < gameFieldSize + 2; i++)
+            {
+                Console.Write($"{square[4]}");
+            }
+        }
+
+        static void WriteLineCentered(string s)
+        {
+            Console.CursorLeft = (Console.WindowWidth - s.Length) / 2;
+            Console.WriteLine(s);
+        }
+
         private static void WelcomeScreen()
         {
-            Console.WriteLine("Welcome to Snek!");
-            Console.WriteLine("****************");
-            Console.WriteLine(" The best game! ");
-            Console.WriteLine("\nPress any key to start");
+            WriteLineCentered("Welcome to Snek!");
+            WriteLineCentered("****************");
+            WriteLineCentered("The best game!");
+            Console.WriteLine();
+            WriteLineCentered("Press any key to start");
             Console.ReadKey();
+            Console.Clear();
         }
 
 
