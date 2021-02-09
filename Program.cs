@@ -7,6 +7,7 @@ namespace Snake
     {
         // global variables
         static int gameSpeed = 500;
+        static int snakeLength = 0;
 
         static void Main(string[] args)
         {
