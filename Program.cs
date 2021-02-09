@@ -8,7 +8,7 @@ namespace Snake
 
         // global variables
         static int gameSpeed = 500;
-        static int gameFieldSize = 40;
+        static int gameFieldSize = 45;
         static int[,] virtualGameGrid = new int[gameFieldSize, gameFieldSize];
 
         //   , ░░, ▒▒, ▓▓, ██
