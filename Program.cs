@@ -8,7 +8,7 @@ namespace Snake
 
         // global variables
         static int gameSpeed = 500;
-        static int[,] gameGrid = new int[45, 20];
+        static int[,] gameGrid = new int[45, 45];
         static void Main(string[] args)
         {
             bool playAgain = false;
