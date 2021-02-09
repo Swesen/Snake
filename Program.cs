@@ -32,7 +32,7 @@ namespace Snake
             {
 
                 // welcome screen
-                //WelcomeScreen();
+                WelcomeScreen();
 
                 // ask for player name
 
