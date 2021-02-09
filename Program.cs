@@ -13,15 +13,14 @@ namespace Snake
 
         //   , ░░, ▒▒, ▓▓, ██
         static string[] square = { "  ", "░░", "▒▒", "▓▓", "██" };
-
         static int snakeLength = 0;
-
 
         static void Main(string[] args)
         {
             // set window size
-            Console.SetBufferSize(100, 50);
             Console.SetWindowSize(100, 50);
+            Console.SetBufferSize(100, 50);
+
             bool playAgain = false;
             do
             {
