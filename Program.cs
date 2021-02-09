@@ -8,7 +8,7 @@ namespace Snake
 
         // global variables
         static int gameSpeed = 500;
-        static int gameFieldSize = 40;
+        static int gameFieldSize = 45;
         static int[,] virtualGameGrid = new int[gameFieldSize, gameFieldSize];
 
         //   , ░░, ▒▒, ▓▓, ██
@@ -17,8 +17,8 @@ namespace Snake
         static void Main(string[] args)
         {
             // set window size
-            Console.SetBufferSize(100, 50);
             Console.SetWindowSize(100, 50);
+            Console.SetBufferSize(100, 50);
             bool playAgain = false;
             do
             {
