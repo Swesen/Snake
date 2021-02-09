@@ -46,7 +46,7 @@ namespace Snake
             {
 
                 // welcome screen
-                LossScreen();
+                
                 WelcomeScreen();
 
                 // ask for player name
