@@ -14,6 +14,9 @@ namespace Snake
         //   , ░░, ▒▒, ▓▓, ██
         static string[] square = { "  ", "░░", "▒▒", "▓▓", "██" };
 
+        static int snakeLength = 0;
+
+
         static void Main(string[] args)
         {
             // set window size
