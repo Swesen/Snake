@@ -19,7 +19,20 @@ namespace Snake
 
             {"Barrier", "▒▒"}
         };
-        static int snakeLength = 0;
+
+        static Dictionary<string, Vector2> Directions = new Dictionary<string, Vector2> {
+            {"Left", new Vector2(-1,0) },
+            {"Right", new Vector2(1,0) },
+            {"Up", new Vector2(0,-1) },
+            {"Down", new Vector2(0,1) }
+        };
+
+        // snake
+        static Vector2 startPosition = new Vector2(20, 20);
+        static Snake snake = new Snake(4, Directions["Right"], startPosition);
+
+
+
 
         static void Main(string[] args)
         {
@@ -39,7 +52,7 @@ namespace Snake
 
                 // run game loop
 
-                DrawVirtualGrid();
+
 
                 PlaySnake(gameSpeed);
 
@@ -66,15 +79,7 @@ namespace Snake
 
         private static void DrawVirtualGrid()
         {
-            // some test values
-            // test snake
-            virtualGameGrid[20, 20] = 1;
-            virtualGameGrid[20, 21] = 2;
-            virtualGameGrid[21, 21] = 3;
-            virtualGameGrid[22, 21] = 4;
-            virtualGameGrid[23, 21] = 5;
-            // test food
-            virtualGameGrid[10, 15] = -1;
+            Console.SetCursorPosition(0, 0);
 
             // debug draw virtual game field
             for (int i = 0; i < gameFieldSize + 2; i++)
@@ -82,10 +87,10 @@ namespace Snake
                 Console.Write($"{visualBlocks["Barrier"]}");
             }
             Console.WriteLine();
-            for (int x = 0; x < gameFieldSize; x++)
+            for (int y = 0; y < gameFieldSize; y++)
             {
                 Console.Write($"{visualBlocks["Barrier"]}");
-                for (int y = 0; y < gameFieldSize; y++)
+                for (int x = 0; x < gameFieldSize; x++)
                 {
                     Console.Write($"{GridContent(virtualGameGrid[x, y])}");
                 }
@@ -121,21 +126,17 @@ namespace Snake
         /// <param name="gameLoopMS">The time in milliseconds in between each game loop</param>
         static void PlaySnake(int gameLoopMS)
         {
-            ConsoleKey userInput = new ConsoleKey();
             do
             {
                 // start timer to keep track of execution time
                 var timer = System.Diagnostics.Stopwatch.StartNew();
 
                 // execute any game updating logick after this point
+                AdvanceSnakePosition();
 
-                // check userInput if the snake is going to turn this update
-
-
+                DrawVirtualGrid();
                 // keep this last
                 // loop read input controls until the next game update
-                // clear userInput from last game update
-                userInput = new ConsoleKey();
                 do
                 {
 
@@ -147,16 +148,16 @@ namespace Snake
                         switch (key.Key)
                         {
                             case ConsoleKey.LeftArrow:
-                                userInput = key.Key;
+                                snake.Direction = Directions["Left"];
                                 break;
                             case ConsoleKey.RightArrow:
-                                userInput = key.Key;
+                                snake.Direction = Directions["Right"];
                                 break;
                             case ConsoleKey.UpArrow:
-                                userInput = key.Key;
+                                snake.Direction = Directions["Up"];
                                 break;
                             case ConsoleKey.DownArrow:
-                                userInput = key.Key;
+                                snake.Direction = Directions["Down"];
                                 break;
                             default:
                                 break;
@@ -172,6 +173,79 @@ namespace Snake
 
                 timer.Stop();
             } while (true);
+        }
+
+        private static void AdvanceSnakePosition()
+        {
+            // set tail end to 0
+            virtualGameGrid[snake.SnakePositions[snake.Length - 1].X, snake.SnakePositions[snake.Length - 1].X] = 0;
+
+            snake.MoveSnake();
+
+            // fill in new snake positions
+            for (int i = 0; i < snake.SnakePositions.Count; i++)
+            {
+                Vector2 newPos = snake.SnakePositions[i];
+                virtualGameGrid[newPos.X, newPos.Y] = i + 1;
+            }
+        }
+
+        class Vector2
+        {
+            public int X;
+            public int Y;
+
+            public Vector2(int x, int y)
+            {
+                X = x;
+                Y = y;
+            }
+
+            public static Vector2 operator +(Vector2 a, Vector2 b)
+            {
+
+                return new Vector2(a.X + b.X, a.Y + b.Y);
+            }
+
+            public static Vector2 operator -(Vector2 a, Vector2 b)
+            {
+
+                return new Vector2(a.X - b.X, a.Y - b.Y);
+            }
+        }
+
+        class Snake
+        {
+            public int Length;
+            public Vector2 Direction;
+            public List<Vector2> SnakePositions;
+
+            public Snake(int length, Vector2 direction, Vector2 startPosition)
+            {
+                Length = length;
+                Direction = direction;
+                SnakePositions = new List<Vector2>();
+                SnakePositions.Add(startPosition);
+                for (int i = 1; i < Length; i++)
+                {
+                    SnakePositions.Add(SnakePositions[i - 1] - direction);
+                }
+            }
+
+            public void MoveSnake()
+            {
+                if (Length > SnakePositions.Count)
+                {
+                    SnakePositions.Add(SnakePositions[SnakePositions.Count - 1]);
+                }
+
+                for (int i = SnakePositions.Count - 1; i < 0; i--)
+                {
+                    SnakePositions[i] = SnakePositions[i - 1];
+                }
+
+                SnakePositions[0] = SnakePositions[0] + Direction;
+            }
         }
     }
 }
