@@ -177,11 +177,13 @@ namespace Snake
             Random rnd = new Random();
             while (true)
             {
+                //random coords
                 int xCord = rnd.Next(0, 45);
                 int yCord = rnd.Next(0, 45);
                 if (gameField[xCord, yCord] == 0)
                 {
                     gameField[xCord, yCord] = -1;
+                    //dont know if necessary 
                     break;
                 }
                 else
