@@ -46,7 +46,7 @@ namespace Snake
             {
 
                 // welcome screen
-                
+
                 WelcomeScreen();
 
                 // ask for player name
@@ -321,6 +321,7 @@ namespace Snake
             WriteLineCentered("Why aRe YoU UgLy?");
             WriteLineCentered("[Insert every horrible inslult here]");
             WriteLineCentered("********************");
+
         }
     }
 }
