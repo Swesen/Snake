@@ -42,6 +42,13 @@ namespace Snake
             bool playAgain = false;
             do
             {
+                int[,] gameField = new int[50, 2];
+                for (int i = 0; i < 50; i++)
+                {
+                    gameField[i, 0] = i;
+                    Console.Write(gameField[i, 0] + " ");
+                }
+
                 // welcome screen
 
                 WelcomeScreen();
@@ -371,5 +378,7 @@ namespace Snake
                 return new Vector2(a.X - b.X, a.Y - b.Y);
             }
         }
+        
+
     }
 }
