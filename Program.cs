@@ -32,6 +32,7 @@ namespace Snake
             {
 
                 // welcome screen
+                LossScreen();
                 WelcomeScreen();
 
                 // ask for player name
@@ -172,6 +173,14 @@ namespace Snake
 
                 timer.Stop();
             } while (true);
+        }
+        static void LossScreen()
+        {
+            Console.Clear();
+            WriteLineCentered("YOU LOSE");
+            string a = "your score was: " + snakeLength;
+            WriteLineCentered(a);
+            WriteLineCentered("****************");
         }
     }
 }
