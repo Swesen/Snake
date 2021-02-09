@@ -12,7 +12,13 @@ namespace Snake
         static int[,] virtualGameGrid = new int[gameFieldSize, gameFieldSize];
 
         //   , ░░, ▒▒, ▓▓, ██
-        static string[] square = { "  ", "░░", "▒▒", "▓▓", "██" };
+        static Dictionary<string, string> visualBlocks = new Dictionary<string, string> {
+            {"Snake", "██"},
+
+            {"Food", " ♥"},
+
+            {"Barrier", "▒▒"}
+        };
         static int snakeLength = 0;
 
         static void Main(string[] args)
@@ -33,7 +39,7 @@ namespace Snake
 
                 // run game loop
                 SpawnFood(virtualGameGrid);
-                DebugDrawVirtualGrid();
+                DrawVirtualGrid();
 
                 PlaySnake(gameSpeed);
 
@@ -44,26 +50,48 @@ namespace Snake
             } while (playAgain);
         }
 
-        private static void DebugDrawVirtualGrid()
+        static string GridContent(int gridValue)
         {
+            if (gridValue == -1)
+            {
+                return visualBlocks["Food"];
+            }
+            else if (gridValue > 0)
+            {
+                return visualBlocks["Snake"];
+            }
+
+            return "  ";
+        }
+
+        private static void DrawVirtualGrid()
+        {
+            // some test values
+            // test snake
+            virtualGameGrid[20, 20] = 1;
+            virtualGameGrid[20, 21] = 2;
+            virtualGameGrid[21, 21] = 3;
+            virtualGameGrid[22, 21] = 4;
+            virtualGameGrid[23, 21] = 5;
+
             // debug draw virtual game field
             for (int i = 0; i < gameFieldSize + 2; i++)
             {
-                Console.Write($"{square[4]}");
+                Console.Write($"{visualBlocks["Barrier"]}");
             }
             Console.WriteLine();
             for (int x = 0; x < gameFieldSize; x++)
             {
-                Console.Write($"{square[4]}");
+                Console.Write($"{visualBlocks["Barrier"]}");
                 for (int y = 0; y < gameFieldSize; y++)
                 {
-                    Console.Write($"{square[virtualGameGrid[x, y]]}");
+                    Console.Write($"{GridContent(virtualGameGrid[x, y])}");
                 }
-                Console.WriteLine($"{square[4]}");
+                Console.WriteLine($"{visualBlocks["Barrier"]}");
             }
             for (int i = 0; i < gameFieldSize + 2; i++)
             {
-                Console.Write($"{square[4]}");
+                Console.Write($"{visualBlocks["Barrier"]}");
             }
         }
 
@@ -153,7 +181,7 @@ namespace Snake
                 int yCord = rnd.Next(0, 45);
                 if (gameField[xCord, yCord] == 0)
                 {
-                    gameField[xCord, yCord] = 4;
+                    gameField[xCord, yCord] = -1;
                     break;
                 }
                 else
