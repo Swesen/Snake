@@ -3,15 +3,15 @@ using System.Collections.Generic;
 
 namespace Snake
 {
-    class Program
+    internal class Program
     {
-
         // global variables
-        static int gameSpeed = 300;
-        static int gameFieldSize = 45;
-        static int[,] virtualGameGrid = new int[gameFieldSize, gameFieldSize];
+        private static int gameSpeed = 300;
 
-        static Dictionary<string, string> visualBlocks = new Dictionary<string, string> {
+        private static int gameFieldSize = 45;
+        private static int[,] virtualGameGrid = new int[gameFieldSize, gameFieldSize];
+
+        private static Dictionary<string, string> visualBlocks = new Dictionary<string, string> {
             {"Snake", "██"},
 
             {"Food", " ♥"},
@@ -21,7 +21,7 @@ namespace Snake
             {"Empty", "  "}
         };
 
-        static Dictionary<string, Vector2> Directions = new Dictionary<string, Vector2> {
+        private static Dictionary<string, Vector2> Directions = new Dictionary<string, Vector2> {
             {"Left", new Vector2(-1,0) },
             {"Right", new Vector2(1,0) },
             {"Up", new Vector2(0,-1) },
@@ -29,13 +29,11 @@ namespace Snake
         };
 
         // snake
-        static Vector2 startPosition = new Vector2(20, 20);
-        static Snake snake = new Snake(4, Directions["Right"], startPosition);
+        private static Vector2 startPosition = new Vector2(20, 20);
 
+        private static Snake snake = new Snake(4, Directions["Right"], startPosition);
 
-
-
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             // set window size
             Console.SetWindowSize(100, 50);
@@ -44,21 +42,19 @@ namespace Snake
             bool playAgain = false;
             do
             {
-
                 // welcome screen
 
                 WelcomeScreen();
 
                 // ask for player name
 
-
                 // run game loop
                 PlaySnake(virtualGameGrid, gameSpeed, snake);
 
                 // print score
+                LossScreen();
 
                 // ask play again
-
             } while (playAgain);
         }
 
@@ -67,7 +63,7 @@ namespace Snake
         /// </summary>
         /// <param name="gridValue"></param>
         /// <returns></returns>
-        static string GridContent(int gridValue)
+        private static string GridContent(int gridValue)
         {
             if (gridValue == 0)
             {
@@ -121,7 +117,7 @@ namespace Snake
         /// Prints a single line string centered in the console.
         /// </summary>
         /// <param name="s">String to print</param>
-        static void WriteLineCentered(string s)
+        private static void WriteLineCentered(string s)
         {
             Console.CursorLeft = (Console.WindowWidth - s.Length) / 2;
             Console.WriteLine(s);
@@ -138,12 +134,11 @@ namespace Snake
             Console.Clear();
         }
 
-
         /// <summary>
         /// Main game, loops through the functions required to play the game.
         /// </summary>
         /// <param name="gameLoopMS">The time in milliseconds in between each game loop</param>
-        static void PlaySnake(int[,] gameField, int gameLoopMS, Snake snake)
+        private static void PlaySnake(int[,] gameField, int gameLoopMS, Snake snake)
         {
             bool gameOver = false;
             do
@@ -157,7 +152,7 @@ namespace Snake
                 DrawVirtualGrid();
                 // keep this last
                 // loop read input controls until the next game update
-                
+
                 do
                 {
                     // runs if a key on the keyboard is pressed
@@ -171,15 +166,19 @@ namespace Snake
                             case ConsoleKey.LeftArrow:
                                 snake.Direction = Directions["Left"];
                                 break;
+
                             case ConsoleKey.RightArrow:
                                 snake.Direction = Directions["Right"];
                                 break;
+
                             case ConsoleKey.UpArrow:
                                 snake.Direction = Directions["Up"];
                                 break;
+
                             case ConsoleKey.DownArrow:
                                 snake.Direction = Directions["Down"];
                                 break;
+
                             default:
                                 break;
                         }
@@ -188,11 +187,6 @@ namespace Snake
 
                 timer.Stop();
             } while (!gameOver);
-            Console.Clear();
-            WriteLineCentered("Game Over...!");
-            WriteLineCentered("****************");
-            Console.WriteLine();
-            WriteLineCentered("Press any key to start");
         }
 
         /// <summary>
@@ -203,13 +197,12 @@ namespace Snake
         private static bool AdvanceSnakePosition(int[,] gameField, Snake snake)
         {
             bool gameOver = false;
-            
+
             // deletes current positions
-            bool gameOver = false;
             for (int i = 0; i < snake.SnakePositions.Count; i++)
             {
                 Vector2 newPos = snake.SnakePositions[i];
-                if(newPos.X >= 0 && newPos.X < 45 && newPos.Y >= 0 && newPos.Y < 45)
+                if (newPos.X >= 0 && newPos.X < 45 && newPos.Y >= 0 && newPos.Y < 45)
                 {
                     gameField[newPos.X, newPos.Y] = 0;
                     gameOver = false;
@@ -217,7 +210,6 @@ namespace Snake
                 else
                 {
                     return false;
-                    
                 }
             }
 
@@ -227,7 +219,6 @@ namespace Snake
             // fill in new snake positions
             for (int i = 0; i < snake.SnakePositions.Count; i++)
             {
-                
                 Vector2 newPos = snake.SnakePositions[i];
                 if (newPos.X >= 0 && newPos.X < 45 && newPos.Y >= 0 && newPos.Y < 45)
                 {
@@ -256,7 +247,7 @@ namespace Snake
             snake.SnakePositions[0] = snake.SnakePositions[0] + snake.Direction;
         }
 
-        static void LossScreen()
+        private static void LossScreen()
         {
             Console.Clear();
             WriteLineCentered("********************");
@@ -268,10 +259,10 @@ namespace Snake
             WriteLineCentered("Why aRe YoU UgLy?");
             WriteLineCentered("[Insert every horrible inslult here]");
             WriteLineCentered("********************");
-
+            Console.ReadKey();
         }
 
-        static void SpawnFood(int[,] gameField)
+        private static void SpawnFood(int[,] gameField)
         {
             Random rnd = new Random();
             while (true)
@@ -282,16 +273,50 @@ namespace Snake
                 if (gameField[xCord, yCord] == 0)
                 {
                     gameField[xCord, yCord] = -1;
-                    //dont know if necessary 
+                    //dont know if necessary
                     break;
                 }
             }
         }
 
         /// <summary>
+        /// try/catch to look for snake going out of bounds. for the switch case: if -1, add to snake length and spawn food
+        /// if 0, nothing happens since its empty space, and every other number is snake body
+        /// </summary>
+        /// <param name="gameField"></param>
+        /// <param name="coordinates"></param>
+        /// <returns>Returns false if snake collides with wall or itself. Returns true otherwise </returns>
+        private static bool HitDetection(int[,] gameField, Vector2 coordinates)
+        {
+            try
+            {
+                switch (gameField[coordinates.X, coordinates.Y])
+                {
+                    case -1:
+                        //add to snake length before spawnfood
+                        SpawnFood(virtualGameGrid);
+                        return true;
+
+                    case 0:
+                        //empty space
+                        return true;
+
+                    default:
+                        //collide with snake
+                        return false;
+                }
+            }
+            catch (IndexOutOfRangeException)
+            {
+                //go out of map
+                return false;
+            }
+        }
+
+        /// <summary>
         /// An object for keeping track of everything related to the snake
         /// </summary>
-        struct Snake
+        private struct Snake
         {
             public int Length;
             public Vector2 Direction;
@@ -317,41 +342,9 @@ namespace Snake
         }
 
         /// <summary>
-        /// try/catch to look for snake going out of bounds. for the switch case: if -1, add to snake length and spawn food 
-        /// if 0, nothing happens since its empty space, and every other number is snake body
-        /// </summary>
-        /// <param name="gameField"></param>
-        /// <param name="coordinates"></param>
-        /// <returns>Returns false if snake collides with wall or itself. Returns true otherwise </returns>
-        static bool HitDetection(int[,] gameField, Vector2 coordinates)
-        {
-            try
-            {
-                switch (gameField[coordinates.X, coordinates.Y])
-                {
-                    case -1:
-                        //add to snake length before spawnfood
-                        SpawnFood(virtualGameGrid);
-                        return true;
-                    case 0:
-                        //empty space
-                        return true;
-                    default:
-                        //collide with snake
-                        return false;
-                }
-            }
-            catch (IndexOutOfRangeException)
-            {
-                //go out of map
-                return false;
-            }
-        }
-
-        /// <summary>
         /// An object for storing a position or a directional vector as integers
         /// </summary>
-        struct Vector2
+        private struct Vector2
         {
             public int X;
             public int Y;
@@ -378,6 +371,5 @@ namespace Snake
                 return new Vector2(a.X - b.X, a.Y - b.Y);
             }
         }
-
     }
 }
