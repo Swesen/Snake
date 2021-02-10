@@ -229,6 +229,21 @@ namespace Snake
             snake.SnakePositions[0] = snake.SnakePositions[0] + snake.Direction;
         }
 
+        static void LossScreen()
+        {
+            Console.Clear();
+            WriteLineCentered("********************");
+            WriteLineCentered("YOU LOSE");
+            string a = "your score was: " + snake.Length;
+            WriteLineCentered(a);
+            WriteLineCentered("You SUCK");
+            WriteLineCentered("My MoM CoUlD Do BeTtEr ThEn YoU");
+            WriteLineCentered("Why aRe YoU UgLy?");
+            WriteLineCentered("[Insert every horrible inslult here]");
+            WriteLineCentered("********************");
+
+        }
+
         static void SpawnFood(int[,] gameField)
         {
             Random rnd = new Random();
@@ -309,19 +324,6 @@ namespace Snake
                 return new Vector2(a.X - b.X, a.Y - b.Y);
             }
         }
-        static void LossScreen()
-        {
-            Console.Clear();
-            WriteLineCentered("********************");
-            WriteLineCentered("YOU LOSE");
-            string a = "your score was: " + snakeLength;
-            WriteLineCentered(a);
-            WriteLineCentered("You SUCK");
-            WriteLineCentered("My MoM CoUlD Do BeTtEr ThEn YoU");
-            WriteLineCentered("Why aRe YoU UgLy?");
-            WriteLineCentered("[Insert every horrible inslult here]");
-            WriteLineCentered("********************");
 
-        }
     }
 }
