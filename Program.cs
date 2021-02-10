@@ -43,18 +43,17 @@ namespace Snake
             bool playAgain = false;
             do
             {
-
                 // welcome screen
-
                 WelcomeScreen();
 
                 // ask for player name
 
+
                 // run game loop
-                PlaySnake(virtualGameGrid, gameSpeed, snake);
+                PlaySnake(virtualGameGrid, gameSpeed, ref snake);
 
                 // print score
-                LossScreen();
+                LossScreen(snake);
 
                 // ask play again
             } while (playAgain);
@@ -140,7 +139,7 @@ namespace Snake
         /// Main game, loops through the functions required to play the game.
         /// </summary>
         /// <param name="gameLoopMS">The time in milliseconds in between each game loop</param>
-        private static void PlaySnake(int[,] gameField, int gameLoopMS, Snake snake)
+        private static void PlaySnake(int[,] gameField, int gameLoopMS, ref Snake snake)
         {
             SpawnFood(virtualGameGrid);
 
@@ -149,7 +148,7 @@ namespace Snake
                 // start timer to keep track of execution time
                 var timer = System.Diagnostics.Stopwatch.StartNew();
                 
-                if (HitDetection(gameField, snake.SnakePositions[0] + snake.Direction))
+                if (HitDetection(gameField, snake.SnakePositions[0] + snake.Direction, ref snake))
                 {
                     // end game
                     return;
@@ -209,6 +208,12 @@ namespace Snake
             } while (true);
         }
 
+        static void AddLength(ref Snake snake)
+        {
+            snake.Length += 1;
+            snake.SnakePositions.Add(snake.SnakePositions[snake.SnakePositions.Count - 1]);
+        }
+
         /// <summary>
         /// Updates the snake position in the gameField
         /// </summary>
@@ -253,7 +258,7 @@ namespace Snake
             snake.SnakePositions[0] = snake.SnakePositions[0] + snake.Direction;
         }
 
-        private static void LossScreen()
+        private static void LossScreen(Snake snake)
         {
             Console.Clear();
             WriteLineCentered("********************");
@@ -292,14 +297,14 @@ namespace Snake
         /// <param name="gameField"></param>
         /// <param name="coordinates"></param>
         /// <returns>Returns false if snake collides with wall or itself. Returns true otherwise </returns>
-        private static bool HitDetection(int[,] gameField, Vector2 coordinates)
+        private static bool HitDetection(int[,] gameField, Vector2 coordinates, ref Snake snake)
         {
             try
             {
                 switch (gameField[coordinates.X, coordinates.Y])
                 {
                     case -1:
-                        // make snake the long boi
+                        AddLength(ref snake);
                         SpawnFood(gameField);
                         return false;
 
