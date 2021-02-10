@@ -7,7 +7,7 @@ namespace Snake
     {
 
         // global variables
-        static int gameSpeed = 500;
+        static int gameSpeed = 300;
         static int gameFieldSize = 45;
         static int[,] virtualGameGrid = new int[gameFieldSize, gameFieldSize];
 
@@ -53,10 +53,6 @@ namespace Snake
 
 
                 // run game loop
-
-                DrawVirtualGrid();
-
-
                 PlaySnake(virtualGameGrid, gameSpeed, snake);
 
                 // print score
@@ -199,13 +195,15 @@ namespace Snake
         /// <param name="snake">Reference to the snake object</param>
         private static void AdvanceSnakePosition(int[,] gameField, Snake snake)
         {
+            // deletes current positions
             for (int i = 0; i < snake.SnakePositions.Count; i++)
             {
                 Vector2 newPos = snake.SnakePositions[i];
                 gameField[newPos.X, newPos.Y] = 0;
             }
 
-            MoveSnake(snake);
+            MoveSnakePositions(snake);
+            // handle collisions
 
             // fill in new snake positions
             for (int i = 0; i < snake.SnakePositions.Count; i++)
@@ -219,7 +217,7 @@ namespace Snake
         /// Moves the internal position of the referenced snake object
         /// </summary>
         /// <param name="snake">Reference to the snake object</param>
-        private static void MoveSnake(Snake snake)
+        private static void MoveSnakePositions(Snake snake)
         {
             for (int i = snake.SnakePositions.Count - 1; i > 0; i--)
             {
@@ -257,10 +255,6 @@ namespace Snake
                     gameField[xCord, yCord] = -1;
                     //dont know if necessary 
                     break;
-                }
-                else
-                {
-                    continue;
                 }
             }
         }
