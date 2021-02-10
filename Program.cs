@@ -288,6 +288,39 @@ namespace Snake
         }
 
 
+
+        /// <summary>
+        /// try/catch to look for snake going out of bounds. for the switch case: if -1, add to snake length and spawn food 
+        /// if 0, nothing happens since its empty space, and every other number is snake body
+        /// </summary>
+        /// <param name="gameField"></param>
+        /// <param name="coordinates"></param>
+        /// <returns>Returns false if snake collides with wall or itself. Returns true otherwise </returns>
+        static bool HitDetection(int[,] gameField, Vector2 coordinates)
+        {
+            try
+            {
+                switch (gameField[coordinates.X, coordinates.Y])
+                {
+                    case -1:
+                        //add to snake length before spawnfood
+                        SpawnFood(virtualGameGrid);
+                        return true;
+                    case 0:
+                        //empty space
+                        return true;
+                    default:
+                        //collide with snake
+                        return false;
+                }
+            }
+            catch (IndexOutOfRangeException)
+            {
+                //go out of map
+                return false;
+            }
+        }
+
         /// <summary>
         /// An object for storing a position or a directional vector as integers
         /// </summary>
