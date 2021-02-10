@@ -11,7 +11,6 @@ namespace Snake
         static int gameFieldSize = 45;
         static int[,] virtualGameGrid = new int[gameFieldSize, gameFieldSize];
 
-        //   , ░░, ▒▒, ▓▓, ██
         static Dictionary<string, string> visualBlocks = new Dictionary<string, string> {
             {"Snake", "██"},
 
@@ -45,19 +44,19 @@ namespace Snake
             bool playAgain = false;
             do
             {
-                
+
                 // welcome screen
                 WelcomeScreen();
 
                 // ask for player name
-                
+
 
                 // run game loop
 
                 DrawVirtualGrid();
 
 
-                PlaySnake(gameSpeed);
+                PlaySnake(virtualGameGrid, gameSpeed, snake);
 
                 // print score
 
@@ -89,6 +88,9 @@ namespace Snake
             return "  ";
         }
 
+        /// <summary>
+        /// Call this to draw the virtualGameGrid with surounding walls
+        /// </summary>
         private static void DrawVirtualGrid()
         {
             Console.SetCursorPosition(0, 0);
@@ -118,6 +120,10 @@ namespace Snake
             return lineToDraw;
         }
 
+        /// <summary>
+        /// Prints a single line string centered in the console.
+        /// </summary>
+        /// <param name="s">String to print</param>
         static void WriteLineCentered(string s)
         {
             Console.CursorLeft = (Console.WindowWidth - s.Length) / 2;
@@ -140,7 +146,7 @@ namespace Snake
         /// Main game, loops through the functions required to play the game.
         /// </summary>
         /// <param name="gameLoopMS">The time in milliseconds in between each game loop</param>
-        static void PlaySnake(int gameLoopMS)
+        static void PlaySnake(int[,] gameField, int gameLoopMS, Snake snake)
         {
             do
             {
@@ -148,14 +154,14 @@ namespace Snake
                 var timer = System.Diagnostics.Stopwatch.StartNew();
 
                 // execute any game updating logick after this point
-                AdvanceSnakePosition(virtualGameGrid);
+                AdvanceSnakePosition(gameField, snake);
 
                 DrawVirtualGrid();
                 // keep this last
                 // loop read input controls until the next game update
                 do
                 {
-
+                    // runs if a key on the keyboard is pressed
                     if (Console.KeyAvailable)
                     {
                         ConsoleKeyInfo key = Console.ReadKey(true);
@@ -181,21 +187,22 @@ namespace Snake
                     }
                 } while (timer.ElapsedMilliseconds < gameLoopMS);
 
-                // debug input
-                //if (userInput != ConsoleKey.Escape)
-                //{
-                //    Console.Write(userInput.ToString());
-                //}
-
                 timer.Stop();
             } while (true);
         }
 
-        private static void AdvanceSnakePosition(int[,] gameField)
+        /// <summary>
+        /// Updates the snake position in the gameField
+        /// </summary>
+        /// <param name="gameField">Reference the game grid</param>
+        /// <param name="snake">Reference to the snake object</param>
+        private static void AdvanceSnakePosition(int[,] gameField, Snake snake)
         {
-            // does not work? why?
-            // set tail end to 0
-            gameField[snake.SnakePositions[snake.Length - 1].X, snake.SnakePositions[snake.Length - 1].X] = 0;
+            for (int i = 0; i < snake.SnakePositions.Count; i++)
+            {
+                Vector2 newPos = snake.SnakePositions[i];
+                gameField[newPos.X, newPos.Y] = 0;
+            }
 
             MoveSnake(snake);
 
@@ -207,9 +214,13 @@ namespace Snake
             }
         }
 
+        /// <summary>
+        /// Moves the internal position of the referenced snake object
+        /// </summary>
+        /// <param name="snake">Reference to the snake object</param>
         private static void MoveSnake(Snake snake)
         {
-            for (int i = snake.SnakePositions.Count - 1; i > 1; i--)
+            for (int i = snake.SnakePositions.Count - 1; i > 0; i--)
             {
                 snake.SnakePositions[i] = snake.SnakePositions[i - 1];
             }
@@ -238,6 +249,9 @@ namespace Snake
             }
         }
 
+        /// <summary>
+        /// An object for keeping track of everything related to the snake
+        /// </summary>
         struct Snake
         {
             public int Length;
@@ -263,7 +277,10 @@ namespace Snake
             }
         }
 
-      
+
+        /// <summary>
+        /// An object for storing a position or a directional vector as integers
+        /// </summary>
         struct Vector2
         {
             public int X;
@@ -275,11 +292,17 @@ namespace Snake
                 Y = y;
             }
 
+            /// <summary>
+            /// Addition operator, enables adding two vector2 together
+            /// </summary>
             public static Vector2 operator +(Vector2 a, Vector2 b)
             {
                 return new Vector2(a.X + b.X, a.Y + b.Y);
             }
 
+            /// <summary>
+            /// Subtraction operator, enables subtracting one vector2 from another
+            /// </summary>
             public static Vector2 operator -(Vector2 a, Vector2 b)
             {
                 return new Vector2(a.X - b.X, a.Y - b.Y);
