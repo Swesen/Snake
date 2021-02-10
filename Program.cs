@@ -217,16 +217,6 @@ namespace Snake
             snake.SnakePositions[0] = snake.SnakePositions[0] + snake.Direction;
         }
 
-        private static void MoveSnake(Snake snake)
-        {
-            for (int i = snake.SnakePositions.Count - 1; i > 1; i--)
-            {
-                snake.SnakePositions[i] = snake.SnakePositions[i - 1];
-            }
-
-            snake.SnakePositions[0] = snake.SnakePositions[0] + snake.Direction;
-        }
-
         static void SpawnFood(int[,] gameField)
         {
             Random rnd = new Random();
