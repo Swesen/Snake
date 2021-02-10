@@ -52,7 +52,6 @@ namespace Snake
 
                 // run game loop
 
-                SpawnFood(virtualGameGrid);
                 DrawVirtualGrid();
 
 
