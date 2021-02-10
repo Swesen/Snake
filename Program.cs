@@ -17,7 +17,9 @@ namespace Snake
 
             {"Food", " ♥"},
 
-            {"Barrier", "▒▒"}
+            {"Barrier", "▒▒"},
+
+            {"Empty", "  "}
         };
 
         static Dictionary<string, Vector2> Directions = new Dictionary<string, Vector2> {
@@ -43,12 +45,12 @@ namespace Snake
             bool playAgain = false;
             do
             {
-
+                
                 // welcome screen
                 WelcomeScreen();
 
                 // ask for player name
-
+                
 
                 // run game loop
 
@@ -64,9 +66,18 @@ namespace Snake
             } while (playAgain);
         }
 
+        /// <summary>
+        /// Takes a value and returns the correct visualBlock
+        /// </summary>
+        /// <param name="gridValue"></param>
+        /// <returns></returns>
         static string GridContent(int gridValue)
         {
-            if (gridValue == -1)
+            if (gridValue == 0)
+            {
+                return visualBlocks["Empty"];
+            }
+            else if (gridValue == -1)
             {
                 return visualBlocks["Food"];
             }
@@ -81,26 +92,30 @@ namespace Snake
         private static void DrawVirtualGrid()
         {
             Console.SetCursorPosition(0, 0);
-
-            // debug draw virtual game field
-            for (int i = 0; i < gameFieldSize + 2; i++)
-            {
-                Console.Write($"{visualBlocks["Barrier"]}");
-            }
-            Console.WriteLine();
+            string lineToDraw;
+            lineToDraw = DrawBarrierLine();
             for (int y = 0; y < gameFieldSize; y++)
             {
-                Console.Write($"{visualBlocks["Barrier"]}");
+                lineToDraw += $"{visualBlocks["Barrier"]}";
                 for (int x = 0; x < gameFieldSize; x++)
                 {
-                    Console.Write($"{GridContent(virtualGameGrid[x, y])}");
+                    lineToDraw += $"{GridContent(virtualGameGrid[x, y])}";
                 }
-                Console.WriteLine($"{visualBlocks["Barrier"]}");
+                lineToDraw += $"{visualBlocks["Barrier"]}\n";
             }
+            lineToDraw += DrawBarrierLine();
+            Console.WriteLine(lineToDraw);
+        }
+
+        private static string DrawBarrierLine()
+        {
+            string lineToDraw = "";
             for (int i = 0; i < gameFieldSize + 2; i++)
             {
-                Console.Write($"{visualBlocks["Barrier"]}");
+                lineToDraw += $"{visualBlocks["Barrier"]}";
             }
+            lineToDraw += "\n";
+            return lineToDraw;
         }
 
         static void WriteLineCentered(string s)
@@ -178,10 +193,11 @@ namespace Snake
 
         private static void AdvanceSnakePosition(int[,] gameField)
         {
+            // does not work? why?
             // set tail end to 0
             gameField[snake.SnakePositions[snake.Length - 1].X, snake.SnakePositions[snake.Length - 1].X] = 0;
 
-            snake.MoveSnake();
+            MoveSnake(snake);
 
             // fill in new snake positions
             for (int i = 0; i < snake.SnakePositions.Count; i++)
@@ -189,6 +205,26 @@ namespace Snake
                 Vector2 newPos = snake.SnakePositions[i];
                 gameField[newPos.X, newPos.Y] = i + 1;
             }
+        }
+
+        private static void MoveSnake(Snake snake)
+        {
+            for (int i = snake.SnakePositions.Count - 1; i > 1; i--)
+            {
+                snake.SnakePositions[i] = snake.SnakePositions[i - 1];
+            }
+
+            snake.SnakePositions[0] = snake.SnakePositions[0] + snake.Direction;
+        }
+
+        private static void MoveSnake(Snake snake)
+        {
+            for (int i = snake.SnakePositions.Count - 1; i > 1; i--)
+            {
+                snake.SnakePositions[i] = snake.SnakePositions[i - 1];
+            }
+
+            snake.SnakePositions[0] = snake.SnakePositions[0] + snake.Direction;
         }
 
         static void SpawnFood(int[,] gameField)
@@ -212,12 +248,18 @@ namespace Snake
             }
         }
 
-        class Snake
+        struct Snake
         {
             public int Length;
             public Vector2 Direction;
             public List<Vector2> SnakePositions;
 
+            /// <summary>
+            /// Constructor
+            /// </summary>
+            /// <param name="length">Sets the starting length of the snake</param>
+            /// <param name="direction">Sets the direction to move at the start</param>
+            /// <param name="startPosition">Sets the position of the head</param>
             public Snake(int length, Vector2 direction, Vector2 startPosition)
             {
                 Length = length;
@@ -228,21 +270,6 @@ namespace Snake
                 {
                     SnakePositions.Add(SnakePositions[i - 1] - direction);
                 }
-            }
-
-            public void MoveSnake()
-            {
-                if (Length > SnakePositions.Count)
-                {
-                    SnakePositions.Add(SnakePositions[SnakePositions.Count - 1]);
-                }
-
-                for (int i = SnakePositions.Count - 1; i < 0; i--)
-                {
-                    SnakePositions[i] = SnakePositions[i - 1];
-                }
-
-                SnakePositions[0] = SnakePositions[0] + Direction;
             }
         }
 
