@@ -11,15 +11,29 @@ namespace Snake
         static int gameFieldSize = 45;
         static int[,] virtualGameGrid = new int[gameFieldSize, gameFieldSize];
 
-        //   , ░░, ▒▒, ▓▓, ██
         static Dictionary<string, string> visualBlocks = new Dictionary<string, string> {
             {"Snake", "██"},
 
             {"Food", " ♥"},
 
-            {"Barrier", "▒▒"}
+            {"Barrier", "▒▒"},
+
+            {"Empty", "  "}
         };
-        static int snakeLength = 0;
+
+        static Dictionary<string, Vector2> Directions = new Dictionary<string, Vector2> {
+            {"Left", new Vector2(-1,0) },
+            {"Right", new Vector2(1,0) },
+            {"Up", new Vector2(0,-1) },
+            {"Down", new Vector2(0,1) }
+        };
+
+        // snake
+        static Vector2 startPosition = new Vector2(20, 20);
+        static Snake snake = new Snake(4, Directions["Right"], startPosition);
+
+
+
 
         static void Main(string[] args)
         {
@@ -38,10 +52,11 @@ namespace Snake
 
 
                 // run game loop
-                SpawnFood(virtualGameGrid);
+
                 DrawVirtualGrid();
 
-                PlaySnake(gameSpeed);
+
+                PlaySnake(virtualGameGrid, gameSpeed, snake);
 
                 // print score
 
@@ -50,9 +65,18 @@ namespace Snake
             } while (playAgain);
         }
 
+        /// <summary>
+        /// Takes a value and returns the correct visualBlock
+        /// </summary>
+        /// <param name="gridValue"></param>
+        /// <returns></returns>
         static string GridContent(int gridValue)
         {
-            if (gridValue == -1)
+            if (gridValue == 0)
+            {
+                return visualBlocks["Empty"];
+            }
+            else if (gridValue == -1)
             {
                 return visualBlocks["Food"];
             }
@@ -64,37 +88,42 @@ namespace Snake
             return "  ";
         }
 
+        /// <summary>
+        /// Call this to draw the virtualGameGrid with surounding walls
+        /// </summary>
         private static void DrawVirtualGrid()
         {
-            // some test values
-            // test snake
-            virtualGameGrid[20, 20] = 1;
-            virtualGameGrid[20, 21] = 2;
-            virtualGameGrid[21, 21] = 3;
-            virtualGameGrid[22, 21] = 4;
-            virtualGameGrid[23, 21] = 5;
-
-            // debug draw virtual game field
-            for (int i = 0; i < gameFieldSize + 2; i++)
+            Console.SetCursorPosition(0, 0);
+            string lineToDraw;
+            lineToDraw = DrawBarrierLine();
+            for (int y = 0; y < gameFieldSize; y++)
             {
-                Console.Write($"{visualBlocks["Barrier"]}");
-            }
-            Console.WriteLine();
-            for (int x = 0; x < gameFieldSize; x++)
-            {
-                Console.Write($"{visualBlocks["Barrier"]}");
-                for (int y = 0; y < gameFieldSize; y++)
+                lineToDraw += $"{visualBlocks["Barrier"]}";
+                for (int x = 0; x < gameFieldSize; x++)
                 {
-                    Console.Write($"{GridContent(virtualGameGrid[x, y])}");
+                    lineToDraw += $"{GridContent(virtualGameGrid[x, y])}";
                 }
-                Console.WriteLine($"{visualBlocks["Barrier"]}");
+                lineToDraw += $"{visualBlocks["Barrier"]}\n";
             }
-            for (int i = 0; i < gameFieldSize + 2; i++)
-            {
-                Console.Write($"{visualBlocks["Barrier"]}");
-            }
+            lineToDraw += DrawBarrierLine();
+            Console.WriteLine(lineToDraw);
         }
 
+        private static string DrawBarrierLine()
+        {
+            string lineToDraw = "";
+            for (int i = 0; i < gameFieldSize + 2; i++)
+            {
+                lineToDraw += $"{visualBlocks["Barrier"]}";
+            }
+            lineToDraw += "\n";
+            return lineToDraw;
+        }
+
+        /// <summary>
+        /// Prints a single line string centered in the console.
+        /// </summary>
+        /// <param name="s">String to print</param>
         static void WriteLineCentered(string s)
         {
             Console.CursorLeft = (Console.WindowWidth - s.Length) / 2;
@@ -117,26 +146,22 @@ namespace Snake
         /// Main game, loops through the functions required to play the game.
         /// </summary>
         /// <param name="gameLoopMS">The time in milliseconds in between each game loop</param>
-        static void PlaySnake(int gameLoopMS)
+        static void PlaySnake(int[,] gameField, int gameLoopMS, Snake snake)
         {
-            ConsoleKey userInput = new ConsoleKey();
             do
             {
                 // start timer to keep track of execution time
                 var timer = System.Diagnostics.Stopwatch.StartNew();
 
                 // execute any game updating logick after this point
+                AdvanceSnakePosition(gameField, snake);
 
-                // check userInput if the snake is going to turn this update
-
-
+                DrawVirtualGrid();
                 // keep this last
                 // loop read input controls until the next game update
-                // clear userInput from last game update
-                userInput = new ConsoleKey();
                 do
                 {
-
+                    // runs if a key on the keyboard is pressed
                     if (Console.KeyAvailable)
                     {
                         ConsoleKeyInfo key = Console.ReadKey(true);
@@ -145,16 +170,16 @@ namespace Snake
                         switch (key.Key)
                         {
                             case ConsoleKey.LeftArrow:
-                                userInput = key.Key;
+                                snake.Direction = Directions["Left"];
                                 break;
                             case ConsoleKey.RightArrow:
-                                userInput = key.Key;
+                                snake.Direction = Directions["Right"];
                                 break;
                             case ConsoleKey.UpArrow:
-                                userInput = key.Key;
+                                snake.Direction = Directions["Up"];
                                 break;
                             case ConsoleKey.DownArrow:
-                                userInput = key.Key;
+                                snake.Direction = Directions["Down"];
                                 break;
                             default:
                                 break;
@@ -162,14 +187,45 @@ namespace Snake
                     }
                 } while (timer.ElapsedMilliseconds < gameLoopMS);
 
-                // debug input
-                //if (userInput != ConsoleKey.Escape)
-                //{
-                //    Console.Write(userInput.ToString());
-                //}
-
                 timer.Stop();
             } while (true);
+        }
+
+        /// <summary>
+        /// Updates the snake position in the gameField
+        /// </summary>
+        /// <param name="gameField">Reference the game grid</param>
+        /// <param name="snake">Reference to the snake object</param>
+        private static void AdvanceSnakePosition(int[,] gameField, Snake snake)
+        {
+            for (int i = 0; i < snake.SnakePositions.Count; i++)
+            {
+                Vector2 newPos = snake.SnakePositions[i];
+                gameField[newPos.X, newPos.Y] = 0;
+            }
+
+            MoveSnake(snake);
+
+            // fill in new snake positions
+            for (int i = 0; i < snake.SnakePositions.Count; i++)
+            {
+                Vector2 newPos = snake.SnakePositions[i];
+                gameField[newPos.X, newPos.Y] = i + 1;
+            }
+        }
+
+        /// <summary>
+        /// Moves the internal position of the referenced snake object
+        /// </summary>
+        /// <param name="snake">Reference to the snake object</param>
+        private static void MoveSnake(Snake snake)
+        {
+            for (int i = snake.SnakePositions.Count - 1; i > 0; i--)
+            {
+                snake.SnakePositions[i] = snake.SnakePositions[i - 1];
+            }
+
+            snake.SnakePositions[0] = snake.SnakePositions[0] + snake.Direction;
         }
 
         static void SpawnFood(int[,] gameField)
@@ -192,7 +248,39 @@ namespace Snake
                 }
             }
         }
-      
+
+        /// <summary>
+        /// An object for keeping track of everything related to the snake
+        /// </summary>
+        struct Snake
+        {
+            public int Length;
+            public Vector2 Direction;
+            public List<Vector2> SnakePositions;
+
+            /// <summary>
+            /// Constructor
+            /// </summary>
+            /// <param name="length">Sets the starting length of the snake</param>
+            /// <param name="direction">Sets the direction to move at the start</param>
+            /// <param name="startPosition">Sets the position of the head</param>
+            public Snake(int length, Vector2 direction, Vector2 startPosition)
+            {
+                Length = length;
+                Direction = direction;
+                SnakePositions = new List<Vector2>();
+                SnakePositions.Add(startPosition);
+                for (int i = 1; i < Length; i++)
+                {
+                    SnakePositions.Add(SnakePositions[i - 1] - direction);
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// An object for storing a position or a directional vector as integers
+        /// </summary>
         struct Vector2
         {
             public int X;
@@ -204,15 +292,19 @@ namespace Snake
                 Y = y;
             }
 
+            /// <summary>
+            /// Addition operator, enables adding two vector2 together
+            /// </summary>
             public static Vector2 operator +(Vector2 a, Vector2 b)
             {
-
                 return new Vector2(a.X + b.X, a.Y + b.Y);
             }
 
+            /// <summary>
+            /// Subtraction operator, enables subtracting one vector2 from another
+            /// </summary>
             public static Vector2 operator -(Vector2 a, Vector2 b)
             {
-
                 return new Vector2(a.X - b.X, a.Y - b.Y);
             }
         }
