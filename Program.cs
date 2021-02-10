@@ -143,14 +143,19 @@ namespace Snake
         private static void PlaySnake(int[,] gameField, int gameLoopMS, Snake snake)
         {
             SpawnFood(virtualGameGrid);
-            bool gameOver = false;
+
             do
             {
                 // start timer to keep track of execution time
                 var timer = System.Diagnostics.Stopwatch.StartNew();
-
+                
+                if (HitDetection(gameField, snake.SnakePositions[0] + snake.Direction))
+                {
+                    // end game
+                    return;
+                }
                 // execute any game updating logick after this point
-                gameOver = AdvanceSnakePosition(gameField, snake);
+                AdvanceSnakePosition(gameField, snake);
 
                 DrawVirtualGrid();
                 // keep this last
@@ -169,28 +174,28 @@ namespace Snake
                             case ConsoleKey.LeftArrow:
                                 if (snake.Direction != Directions["Right"])
                                 {
-                                    snake.Direction = Directions["Left"]; 
+                                    snake.Direction = Directions["Left"];
                                 }
                                 break;
 
                             case ConsoleKey.RightArrow:
                                 if (snake.Direction != Directions["Left"])
                                 {
-                                    snake.Direction = Directions["Right"]; 
+                                    snake.Direction = Directions["Right"];
                                 }
                                 break;
 
                             case ConsoleKey.UpArrow:
                                 if (snake.Direction != Directions["Down"])
                                 {
-                                    snake.Direction = Directions["Up"]; 
+                                    snake.Direction = Directions["Up"];
                                 }
                                 break;
 
                             case ConsoleKey.DownArrow:
                                 if (snake.Direction != Directions["Up"])
                                 {
-                                    snake.Direction = Directions["Down"]; 
+                                    snake.Direction = Directions["Down"];
                                 }
                                 break;
 
@@ -201,7 +206,7 @@ namespace Snake
                 } while (timer.ElapsedMilliseconds < gameLoopMS);
 
                 timer.Stop();
-            } while (!gameOver);
+            } while (true);
         }
 
         /// <summary>
@@ -209,27 +214,19 @@ namespace Snake
         /// </summary>
         /// <param name="gameField">Reference the game grid</param>
         /// <param name="snake">Reference to the snake object</param>
-        private static bool AdvanceSnakePosition(int[,] gameField, Snake snake)
+        private static void AdvanceSnakePosition(int[,] gameField, Snake snake)
         {
-            HitDetection(gameField, snake.SnakePositions[0] + snake.Direction);
-            bool gameOver = false;
+            
 
             // deletes current positions
             for (int i = 0; i < snake.SnakePositions.Count; i++)
             {
                 Vector2 newPos = snake.SnakePositions[i];
-                if (newPos.X >= 0 && newPos.X < 45 && newPos.Y >= 0 && newPos.Y < 45)
-                {
-                    gameField[newPos.X, newPos.Y] = 0;
-                    gameOver = false;
-                }
-                else
-                {
-                    return false;
-                }
+                gameField[newPos.X, newPos.Y] = 0;
+
             }
 
-            
+
             MoveSnakePositions(snake);
             // handle collisions
 
@@ -238,17 +235,8 @@ namespace Snake
             for (int i = 0; i < snake.SnakePositions.Count; i++)
             {
                 Vector2 newPos = snake.SnakePositions[i];
-                if (newPos.X >= 0 && newPos.X < 45 && newPos.Y >= 0 && newPos.Y < 45)
-                {
                     gameField[newPos.X, newPos.Y] = i + 1;
-                    gameOver = false;
-                }
-                else
-                {
-                    return true;
-                }
             }
-            return gameOver;
         }
 
         /// <summary>
@@ -311,24 +299,23 @@ namespace Snake
                 switch (gameField[coordinates.X, coordinates.Y])
                 {
                     case -1:
-                        SpawnFood(virtualGameGrid);
-                        return true;
+                        // make snake the long boi
+                        SpawnFood(gameField);
+                        return false;
 
                     case 0:
                         //empty space
-                        return true;
+                        return false;
 
                     default:
                         //collide with snake
-                        LossScreen();
-                        return false;
+                        return true;
                 }
             }
             catch (IndexOutOfRangeException)
             {
                 //go out of map
-                LossScreen();
-                return false;
+                return true;
             }
 
         }
@@ -409,7 +396,7 @@ namespace Snake
                 return false;
             }
         }
-        
+
 
     }
 }
