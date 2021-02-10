@@ -50,7 +50,6 @@ namespace Snake
 
                 // ask for player name
 
-
                 // run game loop
                 PlaySnake(virtualGameGrid, gameSpeed, snake);
 
@@ -143,6 +142,7 @@ namespace Snake
         /// <param name="gameLoopMS">The time in milliseconds in between each game loop</param>
         private static void PlaySnake(int[,] gameField, int gameLoopMS, Snake snake)
         {
+            SpawnFood(virtualGameGrid);
             bool gameOver = false;
             do
             {
@@ -211,6 +211,7 @@ namespace Snake
         /// <param name="snake">Reference to the snake object</param>
         private static bool AdvanceSnakePosition(int[,] gameField, Snake snake)
         {
+            HitDetection(gameField, snake.SnakePositions[0] + snake.Direction);
             bool gameOver = false;
 
             // deletes current positions
@@ -228,8 +229,10 @@ namespace Snake
                 }
             }
 
+            
             MoveSnakePositions(snake);
             // handle collisions
+
 
             // fill in new snake positions
             for (int i = 0; i < snake.SnakePositions.Count; i++)
@@ -308,7 +311,6 @@ namespace Snake
                 switch (gameField[coordinates.X, coordinates.Y])
                 {
                     case -1:
-                        //add to snake length before spawnfood
                         SpawnFood(virtualGameGrid);
                         return true;
 
@@ -318,14 +320,17 @@ namespace Snake
 
                     default:
                         //collide with snake
+                        LossScreen();
                         return false;
                 }
             }
             catch (IndexOutOfRangeException)
             {
                 //go out of map
+                LossScreen();
                 return false;
             }
+
         }
 
         /// <summary>
