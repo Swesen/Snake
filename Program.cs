@@ -38,7 +38,7 @@ namespace Snake
 
 
                 // run game loop
-
+                SpawnFood(virtualGameGrid);
                 DrawVirtualGrid();
 
                 PlaySnake(gameSpeed);
@@ -73,8 +73,6 @@ namespace Snake
             virtualGameGrid[21, 21] = 3;
             virtualGameGrid[22, 21] = 4;
             virtualGameGrid[23, 21] = 5;
-            // test food
-            virtualGameGrid[10, 15] = -1;
 
             // debug draw virtual game field
             for (int i = 0; i < gameFieldSize + 2; i++)
@@ -173,7 +171,27 @@ namespace Snake
                 timer.Stop();
             } while (true);
         }
-        
+
+        static void SpawnFood(int[,] gameField)
+        {
+            Random rnd = new Random();
+            while (true)
+            {
+                //random coords
+                int xCord = rnd.Next(0, 45);
+                int yCord = rnd.Next(0, 45);
+                if (gameField[xCord, yCord] == 0)
+                {
+                    gameField[xCord, yCord] = -1;
+                    //dont know if necessary 
+                    break;
+                }
+                else
+                {
+                    continue;
+                }
+            }
+        }
 
     }
 }
