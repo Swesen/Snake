@@ -167,19 +167,31 @@ namespace Snake
                         switch (key.Key)
                         {
                             case ConsoleKey.LeftArrow:
-                                snake.Direction = Directions["Left"];
+                                if (snake.Direction != Directions["Right"])
+                                {
+                                    snake.Direction = Directions["Left"]; 
+                                }
                                 break;
 
                             case ConsoleKey.RightArrow:
-                                snake.Direction = Directions["Right"];
+                                if (snake.Direction != Directions["Left"])
+                                {
+                                    snake.Direction = Directions["Right"]; 
+                                }
                                 break;
 
                             case ConsoleKey.UpArrow:
-                                snake.Direction = Directions["Up"];
+                                if (snake.Direction != Directions["Down"])
+                                {
+                                    snake.Direction = Directions["Up"]; 
+                                }
                                 break;
 
                             case ConsoleKey.DownArrow:
-                                snake.Direction = Directions["Down"];
+                                if (snake.Direction != Directions["Up"])
+                                {
+                                    snake.Direction = Directions["Down"]; 
+                                }
                                 break;
 
                             default:
@@ -372,6 +384,24 @@ namespace Snake
             public static Vector2 operator -(Vector2 a, Vector2 b)
             {
                 return new Vector2(a.X - b.X, a.Y - b.Y);
+            }
+
+            public static bool operator ==(Vector2 a, Vector2 b)
+            {
+                if (a.X == b.X && a.Y == b.Y)
+                {
+                    return true;
+                }
+                return false;
+            }
+
+            public static bool operator !=(Vector2 a, Vector2 b)
+            {
+                if (a.X != b.X && a.Y != b.Y)
+                {
+                    return true;
+                }
+                return false;
             }
         }
         
