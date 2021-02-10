@@ -202,8 +202,9 @@ namespace Snake
         /// <param name="snake">Reference to the snake object</param>
         private static bool AdvanceSnakePosition(int[,] gameField, Snake snake)
         {
-            // deletes current positions
             bool gameOver = false;
+            
+            // deletes current positions
             for (int i = 0; i < snake.SnakePositions.Count; i++)
             {
                 Vector2 newPos = snake.SnakePositions[i];
