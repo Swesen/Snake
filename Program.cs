@@ -148,17 +148,19 @@ namespace Snake
         /// <param name="gameLoopMS">The time in milliseconds in between each game loop</param>
         static void PlaySnake(int[,] gameField, int gameLoopMS, Snake snake)
         {
+            bool gameOver = false;
             do
             {
                 // start timer to keep track of execution time
                 var timer = System.Diagnostics.Stopwatch.StartNew();
 
                 // execute any game updating logick after this point
-                AdvanceSnakePosition(gameField, snake);
+                gameOver = AdvanceSnakePosition(gameField, snake);
 
                 DrawVirtualGrid();
                 // keep this last
                 // loop read input controls until the next game update
+                
                 do
                 {
                     // runs if a key on the keyboard is pressed
@@ -188,7 +190,12 @@ namespace Snake
                 } while (timer.ElapsedMilliseconds < gameLoopMS);
 
                 timer.Stop();
-            } while (true);
+            } while (!gameOver);
+            Console.Clear();
+            WriteLineCentered("Game Over...!");
+            WriteLineCentered("****************");
+            Console.WriteLine();
+            WriteLineCentered("Press any key to start");
         }
 
         /// <summary>
@@ -196,12 +203,22 @@ namespace Snake
         /// </summary>
         /// <param name="gameField">Reference the game grid</param>
         /// <param name="snake">Reference to the snake object</param>
-        private static void AdvanceSnakePosition(int[,] gameField, Snake snake)
+        private static bool AdvanceSnakePosition(int[,] gameField, Snake snake)
         {
+            bool gameOver = false;
             for (int i = 0; i < snake.SnakePositions.Count; i++)
             {
                 Vector2 newPos = snake.SnakePositions[i];
-                gameField[newPos.X, newPos.Y] = 0;
+                if(newPos.X >= 0 && newPos.X < 45 && newPos.Y >= 0 && newPos.Y < 45)
+                {
+                    gameField[newPos.X, newPos.Y] = 0;
+                    gameOver = false;
+                }
+                else
+                {
+                    return false;
+                    
+                }
             }
 
             MoveSnake(snake);
@@ -209,9 +226,19 @@ namespace Snake
             // fill in new snake positions
             for (int i = 0; i < snake.SnakePositions.Count; i++)
             {
+                
                 Vector2 newPos = snake.SnakePositions[i];
-                gameField[newPos.X, newPos.Y] = i + 1;
+                if (newPos.X >= 0 && newPos.X < 45 && newPos.Y >= 0 && newPos.Y < 45)
+                {
+                    gameField[newPos.X, newPos.Y] = i + 1;
+                    gameOver = false;
+                }
+                else
+                {
+                    return true;
+                }
             }
+            return gameOver;
         }
 
         /// <summary>
