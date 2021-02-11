@@ -7,7 +7,9 @@ namespace Snake
     {
 
         // global variables
-        private static int gameSpeed = 300;
+
+        private static int gameSpeed = 100;
+
 
         private static int gameFieldSize = 45;
         private static int[,] virtualGameGrid = new int[gameFieldSize, gameFieldSize];
@@ -31,32 +33,82 @@ namespace Snake
 
         // snake
         private static Vector2 startPosition = new Vector2(20, 20);
-
-        private static Snake snake = new Snake(4, Directions["Right"], startPosition);
-
+        private static int startLength = 0;
+      
         private static void Main(string[] args)
         {
             // set window size
-            Console.SetWindowSize(100, 50);
-            Console.SetBufferSize(100, 50);
+            Console.SetWindowSize(140, 50);
+            Console.SetBufferSize(140, 50);
 
             bool playAgain = false;
             do
             {
+                // creates/resets snake position, direction, and length
+                Snake snake = new Snake(startLength, Directions["Right"], startPosition);
+
+                // resets virtualGameGrid
+                Array.Clear(virtualGameGrid, 0, virtualGameGrid.Length);
+
                 // welcome screen
                 WelcomeScreen();
 
                 // ask for player name
 
+                string currentPlayerName = AskPlayerName();
 
                 // run game loop
                 PlaySnake(virtualGameGrid, gameSpeed, ref snake);
 
                 // print score
-                LossScreen(snake);
+                LossScreen(snake, currentPlayerName);
 
                 // ask play again
+                playAgain = AskPlayAgain(playAgain);
             } while (playAgain);
+        }
+
+        /// <summary>
+        /// Takes a bool and returns true or false dependant on user input
+        /// </summary>
+        /// <param name="playAgain"></param>
+        /// <returns>Returns true if user writes yes and false if they write no</returns>
+        private static bool AskPlayAgain(bool playAgain)
+        {
+            while (true)
+            {
+                WriteCentered("Do you want to play again?(yes/no): ");
+                string userAnswer = Console.ReadLine();
+                if (userAnswer == "yes")
+                {
+                    playAgain = true;
+                    Console.Clear();
+                    break;
+                }
+                else if (userAnswer == "no")
+                {
+                    playAgain = false;
+                    break;
+                }
+                else
+                {
+                    WriteLineCentered("Answer yes or no!");
+                }
+            }
+            return playAgain;
+        }
+
+        /// <summary>
+        /// Asks player for their name, saves it in a string and returns it
+        /// </summary>
+        /// <returns>string currentPlayerName</returns>
+        private static string AskPlayerName()
+        {
+            WriteCentered("What's your name?: ");
+            string currentPlayerName = Console.ReadLine();
+            Console.Clear();
+            Console.CursorVisible = !true;
+            return currentPlayerName;
         }
 
         /// <summary>
@@ -115,6 +167,16 @@ namespace Snake
         }
 
         /// <summary>
+        /// Prints a single line string centered in the console without changing line.
+        /// </summary>
+        /// <param name="s">String to print</param>
+        private static void WriteCentered(string s)
+        {
+            Console.CursorLeft = (Console.WindowWidth - s.Length) / 2;
+            Console.Write(s);
+        }
+
+        /// <summary>
         /// Prints a single line string centered in the console.
         /// </summary>
         /// <param name="s">String to print</param>
@@ -141,13 +203,13 @@ namespace Snake
         /// <param name="gameLoopMS">The time in milliseconds in between each game loop</param>
         private static void PlaySnake(int[,] gameField, int gameLoopMS, ref Snake snake)
         {
-            SpawnFood(virtualGameGrid);
+            SpawnFood(virtualGameGrid, snake);
+
 
             do
             {
                 // start timer to keep track of execution time
                 var timer = System.Diagnostics.Stopwatch.StartNew();
-                
                 if (HitDetection(gameField, snake.SnakePositions[0] + snake.Direction, ref snake))
                 {
                     // end game
@@ -159,53 +221,60 @@ namespace Snake
                 DrawVirtualGrid();
                 // keep this last
                 // loop read input controls until the next game update
-
-                do
-                {
-                    // runs if a key on the keyboard is pressed
-                    if (Console.KeyAvailable)
-                    {
-                        ConsoleKeyInfo key = Console.ReadKey(true);
-
-                        // only accept keys that are used in game
-                        switch (key.Key)
-                        {
-                            case ConsoleKey.LeftArrow:
-                                if (snake.Direction != Directions["Right"])
-                                {
-                                    snake.Direction = Directions["Left"];
-                                }
-                                break;
-
-                            case ConsoleKey.RightArrow:
-                                if (snake.Direction != Directions["Left"])
-                                {
-                                    snake.Direction = Directions["Right"];
-                                }
-                                break;
-
-                            case ConsoleKey.UpArrow:
-                                if (snake.Direction != Directions["Down"])
-                                {
-                                    snake.Direction = Directions["Up"];
-                                }
-                                break;
-
-                            case ConsoleKey.DownArrow:
-                                if (snake.Direction != Directions["Up"])
-                                {
-                                    snake.Direction = Directions["Down"];
-                                }
-                                break;
-
-                            default:
-                                break;
-                        }
-                    }
-                } while (timer.ElapsedMilliseconds < gameLoopMS);
+                snake = ReadPlayerInput(gameLoopMS, snake, timer);
 
                 timer.Stop();
             } while (true);
+        }
+
+        private static Snake ReadPlayerInput(int gameLoopMS, Snake snake, System.Diagnostics.Stopwatch timer)
+        {
+            Vector2 tempKey = snake.Direction;
+            do
+            {
+                // runs if a key on the keyboard is pressed
+                if (Console.KeyAvailable)
+                {
+                    ConsoleKeyInfo key = Console.ReadKey(true);
+
+                    // only accept keys that are used in game
+                    switch (key.Key)
+                    {
+                        case ConsoleKey.LeftArrow:
+                            if (snake.Direction != Directions["Right"])
+                            {
+                                tempKey = Directions["Left"];
+                            }
+                            break;
+
+                        case ConsoleKey.RightArrow:
+                            if (snake.Direction != Directions["Left"])
+                            {
+                                tempKey = Directions["Right"];
+                            }
+                            break;
+
+                        case ConsoleKey.UpArrow:
+                            if (snake.Direction != Directions["Down"])
+                            {
+                                tempKey = Directions["Up"];
+                            }
+                            break;
+
+                        case ConsoleKey.DownArrow:
+                            if (snake.Direction != Directions["Up"])
+                            {
+                                tempKey = Directions["Down"];
+                            }
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+            } while (timer.ElapsedMilliseconds < gameLoopMS);
+            snake.Direction = tempKey;
+            return snake;
         }
 
         static void AddLength(ref Snake snake)
@@ -257,13 +326,13 @@ namespace Snake
 
             snake.SnakePositions[0] = snake.SnakePositions[0] + snake.Direction;
         }
-
-        private static void LossScreen(Snake snake)
+      
+        private static void LossScreen(Snake snake, string currentUserName)
         {
             Console.Clear();
             WriteLineCentered("********************");
             WriteLineCentered("YOU LOSE");
-            string a = "your score was: " + snake.Length;
+            string a = currentUserName + "'s score was: " + (snake.Length-startLength);
             WriteLineCentered(a);
             WriteLineCentered("You SUCK");
             WriteLineCentered("My MoM CoUlD Do BeTtEr ThEn YoU");
@@ -273,7 +342,7 @@ namespace Snake
             Console.ReadKey();
         }
 
-        private static void SpawnFood(int[,] gameField)
+        private static void SpawnFood(int[,] gameField, Snake snake)
         {
             Random rnd = new Random();
             while (true)
@@ -288,6 +357,8 @@ namespace Snake
                     break;
                 }
             }
+            Console.SetCursorPosition((gameFieldSize + 3) * 2, 0);
+            Console.Write($"Score: {snake.Length - startLength}");
         }
 
         /// <summary>
@@ -305,7 +376,7 @@ namespace Snake
                 {
                     case -1:
                         AddLength(ref snake);
-                        SpawnFood(gameField);
+                        SpawnFood(gameField, snake);
                         return false;
 
                     case 0:
@@ -401,7 +472,5 @@ namespace Snake
                 return false;
             }
         }
-
-
     }
 }
