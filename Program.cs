@@ -65,6 +65,7 @@ namespace Snake
 
                 // ask play again
                 playAgain = AskPlayAgain(playAgain);
+
             } while (playAgain);
         }
 
@@ -210,6 +211,7 @@ namespace Snake
             {
                 // start timer to keep track of execution time
                 var timer = System.Diagnostics.Stopwatch.StartNew();
+
                 if (HitDetection(gameField, snake.SnakePositions[0] + snake.Direction, ref snake))
                 {
                     // end game
@@ -221,6 +223,7 @@ namespace Snake
                 DrawVirtualGrid();
                 // keep this last
                 // loop read input controls until the next game update
+
                 snake = ReadPlayerInput(gameLoopMS, snake, timer);
 
                 timer.Stop();
