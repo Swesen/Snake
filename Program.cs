@@ -7,7 +7,7 @@ namespace Snake
     {
 
         // global variables
-        private static int gameSpeed = 300;
+        private static int gameSpeed = 100;
 
         private static int gameFieldSize = 45;
         private static int[,] virtualGameGrid = new int[gameFieldSize, gameFieldSize];
@@ -32,8 +32,6 @@ namespace Snake
         // snake
         private static Vector2 startPosition = new Vector2(20, 20);
 
-        private static Snake snake = new Snake(4, Directions["Right"], startPosition);
-
         private static void Main(string[] args)
         {
             // set window size
@@ -43,6 +41,12 @@ namespace Snake
             bool playAgain = false;
             do
             {
+                // creates/resets snake position, direction, and length
+                Snake snake = new Snake(0, Directions["Right"], startPosition);
+
+                // resets virtualGameGrid
+                Array.Clear(virtualGameGrid, 0, virtualGameGrid.Length);
+
                 // welcome screen
                 WelcomeScreen();
 
@@ -56,7 +60,39 @@ namespace Snake
                 LossScreen(snake);
 
                 // ask play again
+                playAgain = AskPlayAgain(playAgain);
+
             } while (playAgain);
+        }
+        
+        /// <summary>
+        /// Takes a bool and returns true or false dependant on user input
+        /// </summary>
+        /// <param name="playAgain"></param>
+        /// <returns>Returns true if user writes yes and false if they write no</returns>
+        private static bool AskPlayAgain(bool playAgain)
+        {
+            while (true)
+            {
+                Console.WriteLine("Do you want to play again?(yes/no)");
+                string userAnswer = Console.ReadLine();
+                if (userAnswer == "yes")
+                {
+                    playAgain = true;
+                    Console.Clear();
+                    break;
+                }
+                else if (userAnswer == "no")
+                {
+                    playAgain = false;
+                    break;
+                }
+                else
+                {
+                    Console.WriteLine("Answer yes or no!");
+                }
+            }
+            return playAgain;
         }
 
         /// <summary>
@@ -401,7 +437,5 @@ namespace Snake
                 return false;
             }
         }
-
-
     }
 }
