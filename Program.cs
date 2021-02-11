@@ -7,7 +7,9 @@ namespace Snake
     {
 
         // global variables
+
         private static int gameSpeed = 100;
+
 
         private static int gameFieldSize = 45;
         private static int[,] virtualGameGrid = new int[gameFieldSize, gameFieldSize];
@@ -32,6 +34,7 @@ namespace Snake
         // snake
         private static Vector2 startPosition = new Vector2(20, 20);
         private static int startLength = 0;
+      
         private static void Main(string[] args)
         {
             // set window size
@@ -51,6 +54,7 @@ namespace Snake
                 WelcomeScreen();
 
                 // ask for player name
+
                 string currentPlayerName = AskPlayerName();
 
                 // run game loop
@@ -202,6 +206,7 @@ namespace Snake
         {
             SpawnFood(virtualGameGrid, snake);
 
+
             do
             {
                 // start timer to keep track of execution time
@@ -324,7 +329,7 @@ namespace Snake
 
             snake.SnakePositions[0] = snake.SnakePositions[0] + snake.Direction;
         }
-
+      
         private static void LossScreen(Snake snake, string currentUserName)
         {
             Console.Clear();
