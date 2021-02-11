@@ -31,7 +31,7 @@ namespace Snake
 
         // snake
         private static Vector2 startPosition = new Vector2(20, 20);
-
+        private static int startLength = 14;
         private static void Main(string[] args)
         {
             // set window size
@@ -42,7 +42,7 @@ namespace Snake
             do
             {
                 // creates/resets snake position, direction, and length
-                Snake snake = new Snake(0, Directions["Right"], startPosition);
+                Snake snake = new Snake(startLength, Directions["Right"], startPosition);
 
                 // resets virtualGameGrid
                 Array.Clear(virtualGameGrid, 0, virtualGameGrid.Length);
@@ -103,6 +103,8 @@ namespace Snake
         {
             WriteCentered("What's your name?: ");
             string currentPlayerName = Console.ReadLine();
+            Console.Clear();
+            Console.CursorVisible = !true;
             return currentPlayerName;
         }
 
@@ -204,7 +206,7 @@ namespace Snake
             {
                 // start timer to keep track of execution time
                 var timer = System.Diagnostics.Stopwatch.StartNew();
-                
+
                 if (HitDetection(gameField, snake.SnakePositions[0] + snake.Direction, ref snake))
                 {
                     // end game
@@ -217,52 +219,60 @@ namespace Snake
                 // keep this last
                 // loop read input controls until the next game update
 
-                do
-                {
-                    // runs if a key on the keyboard is pressed
-                    if (Console.KeyAvailable)
-                    {
-                        ConsoleKeyInfo key = Console.ReadKey(true);
-
-                        // only accept keys that are used in game
-                        switch (key.Key)
-                        {
-                            case ConsoleKey.LeftArrow:
-                                if (snake.Direction != Directions["Right"])
-                                {
-                                    snake.Direction = Directions["Left"];
-                                }
-                                break;
-
-                            case ConsoleKey.RightArrow:
-                                if (snake.Direction != Directions["Left"])
-                                {
-                                    snake.Direction = Directions["Right"];
-                                }
-                                break;
-
-                            case ConsoleKey.UpArrow:
-                                if (snake.Direction != Directions["Down"])
-                                {
-                                    snake.Direction = Directions["Up"];
-                                }
-                                break;
-
-                            case ConsoleKey.DownArrow:
-                                if (snake.Direction != Directions["Up"])
-                                {
-                                    snake.Direction = Directions["Down"];
-                                }
-                                break;
-
-                            default:
-                                break;
-                        }
-                    }
-                } while (timer.ElapsedMilliseconds < gameLoopMS);
+                snake = ReadPlayerInput(gameLoopMS, snake, timer);
 
                 timer.Stop();
             } while (true);
+        }
+
+        private static Snake ReadPlayerInput(int gameLoopMS, Snake snake, System.Diagnostics.Stopwatch timer)
+        {
+            Vector2 tempKey = snake.Direction;
+            do
+            {
+                // runs if a key on the keyboard is pressed
+                if (Console.KeyAvailable)
+                {
+                    ConsoleKeyInfo key = Console.ReadKey(true);
+
+                    // only accept keys that are used in game
+                    switch (key.Key)
+                    {
+                        case ConsoleKey.LeftArrow:
+                            if (snake.Direction != Directions["Right"])
+                            {
+                                tempKey = Directions["Left"];
+                            }
+                            break;
+
+                        case ConsoleKey.RightArrow:
+                            if (snake.Direction != Directions["Left"])
+                            {
+                                tempKey = Directions["Right"];
+                            }
+                            break;
+
+                        case ConsoleKey.UpArrow:
+                            if (snake.Direction != Directions["Down"])
+                            {
+                                tempKey = Directions["Up"];
+                            }
+                            break;
+
+                        case ConsoleKey.DownArrow:
+                            if (snake.Direction != Directions["Up"])
+                            {
+                                tempKey = Directions["Down"];
+                            }
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+            } while (timer.ElapsedMilliseconds < gameLoopMS);
+            snake.Direction = tempKey;
+            return snake;
         }
 
         static void AddLength(ref Snake snake)
@@ -320,7 +330,7 @@ namespace Snake
             Console.Clear();
             WriteLineCentered("********************");
             WriteLineCentered("YOU LOSE");
-            string a = currentUserName + "'s score was: " + snake.Length;
+            string a = currentUserName + "'s score was: " + (snake.Length-startLength);
             WriteLineCentered(a);
             WriteLineCentered("You SUCK");
             WriteLineCentered("My MoM CoUlD Do BeTtEr ThEn YoU");
