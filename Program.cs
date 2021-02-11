@@ -51,20 +51,20 @@ namespace Snake
                 WelcomeScreen();
 
                 // ask for player name
-
+                string currentPlayerName = AskPlayerName();
 
                 // run game loop
                 PlaySnake(virtualGameGrid, gameSpeed, ref snake);
 
                 // print score
-                LossScreen(snake);
+                LossScreen(snake, currentPlayerName);
 
                 // ask play again
                 playAgain = AskPlayAgain(playAgain);
 
             } while (playAgain);
         }
-        
+
         /// <summary>
         /// Takes a bool and returns true or false dependant on user input
         /// </summary>
@@ -74,7 +74,7 @@ namespace Snake
         {
             while (true)
             {
-                Console.WriteLine("Do you want to play again?(yes/no)");
+                WriteCentered("Do you want to play again?(yes/no): ");
                 string userAnswer = Console.ReadLine();
                 if (userAnswer == "yes")
                 {
@@ -89,10 +89,21 @@ namespace Snake
                 }
                 else
                 {
-                    Console.WriteLine("Answer yes or no!");
+                    WriteLineCentered("Answer yes or no!");
                 }
             }
             return playAgain;
+        }
+
+        /// <summary>
+        /// Asks player for their name, saves it in a string and returns it
+        /// </summary>
+        /// <returns>string currentPlayerName</returns>
+        private static string AskPlayerName()
+        {
+            WriteCentered("What's your name?: ");
+            string currentPlayerName = Console.ReadLine();
+            return currentPlayerName;
         }
 
         /// <summary>
@@ -148,6 +159,16 @@ namespace Snake
             }
             lineToDraw += "\n";
             return lineToDraw;
+        }
+
+        /// <summary>
+        /// Prints a single line string centered in the console without changing line.
+        /// </summary>
+        /// <param name="s">String to print</param>
+        private static void WriteCentered(string s)
+        {
+            Console.CursorLeft = (Console.WindowWidth - s.Length) / 2;
+            Console.Write(s);
         }
 
         /// <summary>
@@ -294,12 +315,12 @@ namespace Snake
             snake.SnakePositions[0] = snake.SnakePositions[0] + snake.Direction;
         }
 
-        private static void LossScreen(Snake snake)
+        private static void LossScreen(Snake snake, string currentUserName)
         {
             Console.Clear();
             WriteLineCentered("********************");
             WriteLineCentered("YOU LOSE");
-            string a = "your score was: " + snake.Length;
+            string a = currentUserName + "'s score was: " + snake.Length;
             WriteLineCentered(a);
             WriteLineCentered("You SUCK");
             WriteLineCentered("My MoM CoUlD Do BeTtEr ThEn YoU");
