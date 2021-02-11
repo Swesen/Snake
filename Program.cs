@@ -31,12 +31,12 @@ namespace Snake
 
         // snake
         private static Vector2 startPosition = new Vector2(20, 20);
-        private static int startLength = 14;
+        private static int startLength = 0;
         private static void Main(string[] args)
         {
             // set window size
-            Console.SetWindowSize(100, 50);
-            Console.SetBufferSize(100, 50);
+            Console.SetWindowSize(140, 50);
+            Console.SetBufferSize(140, 50);
 
             bool playAgain = false;
             do
@@ -200,7 +200,7 @@ namespace Snake
         /// <param name="gameLoopMS">The time in milliseconds in between each game loop</param>
         private static void PlaySnake(int[,] gameField, int gameLoopMS, ref Snake snake)
         {
-            SpawnFood(virtualGameGrid);
+            SpawnFood(virtualGameGrid, snake);
 
             do
             {
@@ -340,7 +340,7 @@ namespace Snake
             Console.ReadKey();
         }
 
-        private static void SpawnFood(int[,] gameField)
+        private static void SpawnFood(int[,] gameField, Snake snake)
         {
             Random rnd = new Random();
             while (true)
@@ -355,6 +355,8 @@ namespace Snake
                     break;
                 }
             }
+            Console.SetCursorPosition((gameFieldSize + 3) * 2, 0);
+            Console.Write($"Score: {snake.Length - startLength}");
         }
 
         /// <summary>
@@ -372,7 +374,7 @@ namespace Snake
                 {
                     case -1:
                         AddLength(ref snake);
-                        SpawnFood(gameField);
+                        SpawnFood(gameField, snake);
                         return false;
 
                     case 0:
